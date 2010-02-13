@@ -21,3 +21,6 @@ PrecompiledWeb
 *.ncb
 .dotest
 .sass-cache
+NHamlLanguagePackage_i.c
+NHamlLanguagePackage_i.h
+NHamlLanguagePackage_p.c
