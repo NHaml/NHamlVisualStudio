@@ -80,10 +80,11 @@ namespace NHamlLanguage
             if (cPaints == 0)
                 paints = new _SOURCEPAINTING[1];
 
-            using (var tw = new StreamWriter(@"e:\output.txt"))
+            // Simple debug
+            /*using (var tw = new StreamWriter(@"e:\output.txt"))
             {
               tw.Write(result);
-            }
+            }*/
 
             foreach (var events in _events.Values)
             {
