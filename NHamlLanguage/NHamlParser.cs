@@ -8,7 +8,13 @@ namespace NHamlLanguage
 {
     public class NHamlParser
     {
-        public const string UsingDirectives = @"using System.Web;
+        public const string UsingDirectives = @"
+using System;
+using System.IO;
+using NHaml;
+using NHaml.Utils;
+using System.Collections.Generic;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
