@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using NHamlLanguagePackageLib;
+using System.IO;
 
 namespace NHamlLanguage
 {
@@ -78,6 +79,11 @@ namespace NHamlLanguage
             int cPaints = paints.Length;
             if (cPaints == 0)
                 paints = new _SOURCEPAINTING[1];
+
+            using (var tw = new StreamWriter(@"e:\output.txt"))
+            {
+              tw.Write(result);
+            }
 
             foreach (var events in _events.Values)
             {

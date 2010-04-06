@@ -8,12 +8,7 @@ namespace NHamlLanguage
 {
     public class NHamlParser
     {
-        public const string UsingDirectives = @"using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
-using System.Web;
+        public const string UsingDirectives = @"using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
@@ -81,7 +76,11 @@ using NHaml.Web.Mvc;
                 HandleLine(line);
                 line = codeMapper.ReadLine();
             }
-
+            while (openedBraces.Count > 0)
+            {
+              openedBraces.Pop();
+              codeMapper.AppendOutputText("}");
+            }
             codeMapper.AppendOutputText(EndText);
         }
 
@@ -95,12 +94,11 @@ using NHaml.Web.Mvc;
                 string capturedChar = match.Groups[2].ToString(); // determining character
                 string definition = match.Groups[3].ToString(); // rest of the tag definiton (like 'tag' in '%tag')
                 string text = match.Groups[4].ToString(); // rest of the line
-                if (openedBraces.Count>0) {
-                    if (spaceLength <= openedBraces.Peek()) {
-                        openedBraces.Pop();
-                        codeMapper.AppendOutputText("}");
-                    }
+                while ((openedBraces.Count>0) && (spaceLength <= openedBraces.Peek())) {
+                     openedBraces.Pop();
+                     codeMapper.AppendOutputText("}");
                 }
+                bool skip = false;
                 switch (capturedChar)
                 {
                     case "%":
@@ -141,26 +139,39 @@ using NHaml.Web.Mvc;
                         type = NHamlTokenType.PartialDefinition;
                         break;
                     default:
-                        throw new InvalidOperationException();
+                        codeMapper.SkipInputText(line.Length, NHamlTokenType.PlainText);
+                        skip = true;
+                        break;
+                        //throw new InvalidOperationException();
                 }
-                if (type!=NHamlTokenType.PlainText) codeMapper.SkipInputText(spaceLength + 1 + definition.Length, type);
-
-                if ((type == NHamlTokenType.EquationDefinition) ||
-                    (definition.Length>0 && definition[definition.Length-1]=='=')) {
-                        codeMapper.AppendOutputText("System.Console.WriteLine(");
-                        codeMapper.AddMappedSection(text.Length);
-                        codeMapper.AppendOutputText(");" + System.Environment.NewLine);
-                    
-                }
-                if ((type == NHamlTokenType.CodeDefinition))
+                if (!skip)
                 {
+                  if (type != NHamlTokenType.PlainText) codeMapper.SkipInputText(spaceLength + 1 + definition.Length, type);
+
+                  if ((type == NHamlTokenType.EquationDefinition) ||
+                      (definition.Length > 0 && definition[definition.Length - 1] == '='))
+                  {
+                    codeMapper.AppendOutputText("System.Console.WriteLine(");
+                    codeMapper.AddMappedSection(text.Length);
+                    codeMapper.AppendOutputText(");" + System.Environment.NewLine);
+
+                  }
+                  if ((type == NHamlTokenType.CodeDefinition))
+                  {
                     codeMapper.AddMappedSection(text.Length);
                     codeMapper.AppendOutputText(" {");
                     codeMapper.AppendOutputText(System.Environment.NewLine);
+                  }
                 }
             }
             else
             {
+                var spaceLength = line.Length - line.TrimStart(' ').Length;
+                while ((openedBraces.Count > 0) && (spaceLength <= openedBraces.Peek()))
+                {
+                  openedBraces.Pop();
+                  codeMapper.AppendOutputText("}");
+                }
                 codeMapper.SkipInputText(line.Length, NHamlTokenType.PlainText);
             }
         }
