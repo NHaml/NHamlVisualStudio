@@ -4,8 +4,8 @@ C# Intellisense and syntax-highlighting support for NHaml files
 Install
 =======
 
-Download the .msi intaller file from the Download section, and run it.
-It is tested to work with Visual Studio 2008 x64 Professional edition.
+Download the .msi intaller file from the Download section ( http://github.com/sztupy/nhamlsense/downloads ),
+and run it. It is tested to work with Visual Studio 2008 x64 Professional edition.
 It might not work with other editions.
 
 Currently it does not support Visual Studio 2010 or 2005 editions.
